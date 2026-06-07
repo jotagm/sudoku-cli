@@ -16,12 +16,13 @@ type Model struct {
 	cursorRow int
 	cursorCol int
 	fixed     [9][9]bool
+	solved    bool
 }
 
 func NewModel() Model {
 	board := core.Generate()
 
-	board.RemoveCells(30)
+	board.RemoveCells(45)
 
 	var fixed [9][9]bool
 	for i := 0; i < 9; i++ {
@@ -64,6 +65,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			num, _ := strconv.Atoi(msg.String())
 			if !m.fixed[m.cursorRow][m.cursorCol] {
 				m.board.Matriz[m.cursorRow][m.cursorCol] = num
+				m.solved = m.board.IsSolved()
 			}
 		}
 
@@ -88,7 +90,9 @@ func (m Model) View() string {
 		}
 		s += "\n"
 	}
-	s += "cursor: " + strconv.Itoa(m.cursorRow) + ", " + strconv.Itoa(m.cursorCol) + "\n"
+	if m.solved {
+		s += "\nParabéns! Você resolveu o sudoku!\n"
+	}
 	return s
 }
 func TrocaZeroPorPonto(val int) string {
